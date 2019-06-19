@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="./editor/editor.css" />
+    <link rel="stylesheet" href="./awesome/all.min.css" />
+    <link rel="stylesheet" href="./css/bootstrap.css" />
+    <link rel="stylesheet" href="./css/mdb.css" />
+    <link rel="stylesheet" href="./css/mdb.css" />
+    <script src="./vuejs/vue.min.js"></script>
+    <script src="./compiler.js"></script>
+    <script src="./descriptionComponent.js"></script>
+    <title>plantuml IDE!</title>
+  </head>
+  <body>
+    <div id="app">
+      <nav
+        class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between"
+      >
+        <a class="navbar-brand" href="#">UML Plant</a>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <div class="custom-file">
+              <input
+                type="file"
+                webkitdirectory
+                class="custom-file-input"
+                id="inputGroupFile012"
+                aria-describedby="inputGroupFileAddon01"
+              />
+              <label class="custom-file-label" for="inputGroupFile01"
+                >Выбрать новый каталог проекта</label
+              >
+            </div>
+          </li>
+        </ul>
+        <div class="form-inline" v-if="workingFolder">
+          <!-- <input
+            class="form-control mr-sm-2"
+            type="search"
+            v-model="newFileName"
+            placeholder="Название файла"
+            aria-label="Search"
+          /> -->
+          <button
+            @click="fullCompilation"
+            class="btn btn-outline-info my-2 my-sm-0"
+          >
+            <i class="fa fa-file-alt"></i> Полная компиляция
+          </button>
+          <button
+            @click="generateReport"
+            class="btn btn-outline-warning my-2 my-sm-0"
+          >
+            <i class="fa fa-file-alt"></i> Генерировать отчет
+          </button>
+        </div>
+      </nav>
+
+      <div class="container" v-if="workingFolder" style="margin-top:50px;">
+        <div class="row">
+          <div class="col-lg-3 col-md-3 col-sm-3">
+            <div class="list-group">
+              <h3>Дерево проекта</h3>
+              <a
+                href="#"
+                @click="chooseDirCreateFile('usecase')"
+                class="list-group-item list-group-item-action"
+              >
+                <span>
+                  <i class="fas fa-folder"></i> <strong>usecase</strong></span
+                >
+                <div v-if="newFileCatalog==='usecase'" class="input-group">
+                  <input
+                    class="form-control mr-sm-2"
+                    type="search"
+                    v-model="newFileName"
+                    placeholder="Название файла"
+                    aria-label="Search"
+                  />
+                  <br />
+                  <button @click="createFile">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+                <a
+                  href="#"
+                  class="list-group-item list-group-item-action"
+                  v-for="item in folders.usecase"
+                >
+                  <span @click="openFile(item,'usecase')">
+                    <i class="fas fa-file-alt"></i> {{ item }}
+                  </span>
+                </a>
+              </a>
+              <a
+                href="#"
+                @click="chooseDirCreateFile('robustness')"
+                class="list-group-item list-group-item-action"
+              >
+                <span>
+                  <i class="fas fa-folder"></i> <strong>robustness</strong>
+                </span>
+                <div v-if="newFileCatalog==='robustness'" class="input-group">
+                  <input
+                    class="form-control mr-sm-2"
+                    type="search"
+                    v-model="newFileName"
+                    placeholder="Название файла"
+                    aria-label="Search"
+                  />
+                  <br />
+                  <button @click="createFile">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+                <a
+                  href="#"
+                  class="list-group-item list-group-item-action"
+                  v-for="item in folders.robustness"
+                >
+                  <span @click="openFile(item,'robustness')">
+                    <i class="fas fa-file-alt"></i> {{ item }}
+                  </span>
+                </a>
+              </a>
+              <a
+                href="#"
+                @click="chooseDirCreateFile('sequence')"
+                class="list-group-item list-group-item-action"
+              >
+                <span>
+                  <i class="fas fa-folder"></i> <strong>Sequence</strong>
+                </span>
+                <div v-if="newFileCatalog==='sequence'" class="input-group">
+                  <input
+                    class="form-control mr-sm-2"
+                    type="search"
+                    v-model="newFileName"
+                    placeholder="Название файла"
+                    aria-label="Search"
+                  />
+                  <br />
+                  <button @click="createFile">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+                <a
+                  href="#"
+                  class="list-group-item list-group-item-action"
+                  v-for="item in folders.sequence"
+                >
+                  <span @click="openFile(item,'sequence')">
+                    <i class="fas fa-file-alt"></i> {{ item }}
+                  </span>
+                </a>
+              </a>
+              <a
+                href="#"
+                @click="chooseDirCreateFile('class')"
+                class="list-group-item list-group-item-action"
+              >
+                <span>
+                  <i class="fas fa-folder"></i> <strong>class</strong>
+                </span>
+                <div v-if="newFileCatalog==='class'" class="input-group">
+                  <input
+                    class="form-control mr-sm-2"
+                    type="search"
+                    v-model="newFileName"
+                    placeholder="Название файла"
+                    aria-label="Search"
+                  />
+                  <br />
+                  <button @click="createFile">
+                    <i class="fa fa-plus"></i>
+                  </button>
+                </div>
+                <a
+                  href="#"
+                  class="list-group-item list-group-item-action"
+                  v-for="item in folders.class"
+                >
+                  <span @click="openFile(item,'class')">
+                    <i class="fas fa-file-alt"></i> {{ item }}
+                  </span>
+                </a>
+              </a>
+            </div>
+          </div>
+          <div class="col-lg-8 col-md-8 col-sm-8">
+            <div v-if="!openedFile" class="alert alert-info">
+              Выберите файл из каталога,или создайте новый
+            </div>
+            <div v-else>
+              <span
+                >Открытый файл:
+                <b>{{ diagramTypeCurDirectory }}/{{ openedFile }}</b></span
+              >
+              <br />
+              <p>
+                Последняя компиляция (Дата в формате ISO ):
+                <b> {{ lastCompile }} </b>
+              </p>
+            </div>
+            <div class="input-group" v-if="showMoveMenu">
+              <div class="input-group-prepend">
+                <button
+                  class="btn btn-outline-secondary"
+                  @click="moveFile"
+                  type="button"
+                >
+                  Перенести в {{ folderToMove }}
+                </button>
+              </div>
+              <select
+                v-model="folderToMove"
+                class="custom-select"
+                id="inputGroupSelect03"
+              >
+                <option selected>usecase</option>
+                <option>robustness</option>
+                <option>sequence</option>
+                <option>class</option>
+              </select>
+            </div>
+            <div class="buttonsToOptionsFile" v-if="this.openedFile">
+              <button class="btn btn-info btn-small" @click="saveFile">
+                <i class="fas fa-save"></i> Сохранить
+              </button>
+              <button class="btn btn-info btn-small" @click="compile">
+                <i class="fas fa-project-diagram"></i> Компилировать
+              </button>
+              <button class="btn btn-danger btn-small" @click="deleteFile">
+                <i class="fas fa-trash-alt"></i> Удалить
+              </button>
+              <button class="btn btn-warning btn-small" @click="toggleMoveMenu">
+                <i class="fas fa-file"></i> Переместить
+              </button>
+              <button
+                class="btn btn-success btn-small"
+                @click="toggleDescriptionBox"
+              >
+                <i class="fas fa-file"></i> Описание
+              </button>
+            </div>
+            <!-- <button class="btn btn-warning" @click="generateOtchet">
+              <i class="fas fa-project-diagram"></i> Отчет
+            </button> -->
+            <div v-if="imgOpened">
+              <img :src="imgOpened" height="100%" />
+              <button @click="closeImg" class="btn btn-warning">
+                Закрыть изображение
+              </button>
+            </div>
+            <div v-if="descriptionBox">
+              <div id="usecase" v-if="diagramTypeCurDirectory == 'usecase'">
+                <h4>Прецеденты</h4>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input1"
+                    class="form-control"
+                    placeholder="Название"
+                  />
+                </p>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input2"
+                    class="form-control"
+                    placeholder="Предусловие"
+                  />
+                </p>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input3"
+                    class="form-control"
+                    placeholder="Цель сценария"
+                  />
+                </p>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input4"
+                    class="form-control"
+                    placeholder="Основной сценарий"
+                  />
+                </p>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input5"
+                    class="form-control"
+                    placeholder="Постусловия"
+                  />
+                </p>
+                <p>
+                  <input
+                    v-model="formUseCaseComments.input6"
+                    class="form-control"
+                    placeholder="Условие ввода и действие альтернативных сценариев"
+                  />
+                </p>
+                <button @click="addUseCaseDescription">Добавить</button>
+                <div
+                  v-for="(item,index) in commentsUseCase"
+                  class="card"
+                  style="margin-bottom:5px; margin-top:5px;"
+                >
+                  <div class="card-body">
+                    <p>
+                      Прецедент # {{ index }}
+                      <a
+                        href="#"
+                        @click="deleteUseCaseDescriptionElement(index)"
+                        >[Удалить]</a
+                      >
+                    </p>
+                    <p>Название прицидента: {{ item.input1 }}</p>
+                    <p>Предусловие: {{ item.input2 }}</p>
+                    <p>Цель сценария: {{ item.input3 }}</p>
+                    <p>Основной сценарий: {{ item.input4 }}</p>
+                    <p>Постусловия: {{ item.input5 }}</p>
+                    <p>
+                      Условие ввода и действие альтернативных сценариев:
+                      {{ item.input6 }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div v-else>
+                <h4>Описание</h4>
+                <textarea width="100%" v-model="comments" id="test2"></textarea>
+              </div>
+            </div>
+            <h4>Редактор кода</h4>
+            <div id="codeFlaskEditor" class="elevation"></div>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        <div class="container">
+          <h3>Рабочий каталог проекта не выбран</h3>
+        </div>
+      </div>
+    </div>
+    <div class="modal" id="createFile" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            ...
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./editor/editor.js"></script>
+    <script src="./mainwindow.js"></script>
+    <script src="./packer.js"></script>
+    <script src="./projectmanager.js"></script>
+    <script>
+      document
+        .getElementById("inputGroupFile012")
+        .addEventListener("change", event => {
+          ProjectManager.openProject(event);
+        });
+    </script>
+  </body>
+</html>
